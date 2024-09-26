@@ -9,8 +9,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.response import Response
 
 from .models import Token
-from .models import Numbers
-from .models import State
+from .models import State,StateCode, Phrases
 from .serializer import TokenSerializer
 import random
 
@@ -35,26 +34,33 @@ def confirm_token(request, token):
         return Response({'detail': 'Invalid token'}, status=status.HTTP_403_FORBIDDEN)
     
 
-
 @api_view(["GET"])
-def get_random_number(request, state_name):
-    try:
-        # Retrieve the state based on the provided state name
-        state = State.objects.get(state=state_name)
+def generate_phone_numbers(request):
+    phone_numbers = set()  # Use a set to avoid duplicates
+
+    while len(phone_numbers) < 20:
+        # Randomly select a state code
+        state_code = random.choice(StateCode.objects.all())
         
-        # Get all numbers associated with the state
-        numbers = Numbers.objects.filter(stat=state)
-        
-        if not numbers.exists():
-            # If no numbers are found, return a 404 status
-            return Response({'detail': 'No numbers found for this state'}, status=status.HTTP_404_NOT_FOUND)
-        
-        # Choose one random number from the list
-        random_number = random.choice(numbers).num
-        
-        # Return the random number
-        return Response({'random_number': random_number}, status=status.HTTP_200_OK)
-    
-    except State.DoesNotExist:
-        # If the state doesn't exist, return a 404 Not Found status
-        return Response({'detail': state}, status=status.HTTP_404_NOT_FOUND)
+        # Get all phrases associated with the selected state code
+        phrases = Phrases.objects.filter(origin=state_code)
+
+        # Randomly select one phrase from the list
+        if phrases.exists():
+            phrase = random.choice(phrases)
+        else:
+            return Response({'detail': 'No phrases found for the selected state code'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Generate the first 6 digits from state code and phrase code
+        first_six_digits = f"{state_code.code}{phrase.code}"
+
+        # Generate a random 5-digit number to complete the 11-digit phone number
+        last_five_digits = random.randint(10000, 99999)
+
+        # Form the complete phone number
+        full_phone_number = f"{first_six_digits}{last_five_digits}"
+
+        # Add the phone number to the set to ensure uniqueness
+        phone_numbers.add(full_phone_number)
+
+    return Response({'phone_numbers': list(phone_numbers)}, status=status.HTTP_200_OK)

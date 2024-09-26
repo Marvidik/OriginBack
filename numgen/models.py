@@ -16,14 +16,25 @@ class State(models.Model):
 
         return self.state
 
-class Numbers(models.Model):
-    stat=models.ForeignKey(State,on_delete=models.CASCADE)
-    num=models.CharField(max_length=16)
+
+class StateCode(models.Model):
+    name=models.CharField(max_length=100)
+    code=models.IntegerField()
 
 
-    def __str__(self):
+    def __str__(self) -> str:
+        code=f'{self.code}'
+        return code
 
-        return self.num
+
+class Phrases(models.Model):
+    origin=models.ForeignKey(StateCode,on_delete=models.CASCADE )
+    name=models.CharField(max_length=100)
+    code=models.IntegerField()    
+
+    def __str__(self) -> str:
+        code=f'{self.code}'
+        return code
 
 
 

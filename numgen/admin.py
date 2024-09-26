@@ -1,8 +1,9 @@
 from django.contrib import admin
-from .models import Token,State,Numbers
+from .models import Token,State,StateCode,Phrases
 # Register your models here.
 
 
 admin.site.register(Token)
-admin.site.register(Numbers)
 admin.site.register(State)
+admin.site.register(StateCode)
+admin.site.register(Phrases)
