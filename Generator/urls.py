@@ -22,7 +22,7 @@ from numgen import views
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("token/<token>",views.confirm_token,name="confirm"),
-    path("numbers/",views.generate_phone_numbers,name="numbers")
+    path("numbers/<state_name>",views.generate_phone_numbers,name="numbers")
    
 
 ]

@@ -35,21 +35,28 @@ def confirm_token(request, token):
     
 
 @api_view(["GET"])
-def generate_phone_numbers(request):
+def generate_phone_numbers(request, state_name):
     phone_numbers = set()  # Use a set to avoid duplicates
 
+    # Get all state codes associated with the given state name
+    state_codes = StateCode.objects.filter(name=state_name)
+    
+    if not state_codes.exists():
+        return Response({'detail': 'Invalid state name provided'}, status=status.HTTP_404_NOT_FOUND)
+
+    # Get all phrases for each state code associated with the state name
     while len(phone_numbers) < 20:
-        # Randomly select a state code
-        state_code = random.choice(StateCode.objects.all())
-        
+        # Randomly select one state code from the list
+        state_code = random.choice(state_codes)
+
         # Get all phrases associated with the selected state code
         phrases = Phrases.objects.filter(origin=state_code)
 
+        if not phrases.exists():
+            return Response({'detail': f'No phrases found for the state code: {state_code}'}, status=status.HTTP_404_NOT_FOUND)
+
         # Randomly select one phrase from the list
-        if phrases.exists():
-            phrase = random.choice(phrases)
-        else:
-            return Response({'detail': 'No phrases found for the selected state code'}, status=status.HTTP_404_NOT_FOUND)
+        phrase = random.choice(phrases)
 
         # Generate the first 6 digits from state code and phrase code
         first_six_digits = f"{state_code.code}{phrase.code}"

@@ -23,8 +23,8 @@ class StateCode(models.Model):
 
 
     def __str__(self) -> str:
-        code=f'{self.code}'
-        return code
+        
+        return self.name
 
 
 class Phrases(models.Model):
@@ -34,7 +34,7 @@ class Phrases(models.Model):
 
     def __str__(self) -> str:
         code=f'{self.code}'
-        return code
+        return self.origin.name
 
 
 
