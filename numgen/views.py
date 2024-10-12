@@ -62,10 +62,10 @@ def generate_phone_numbers(request, state_name):
         first_six_digits = f"{state_code.code}{phrase.code}"
 
         # Generate a random 5-digit number to complete the 11-digit phone number
-        last_five_digits = random.randint(10000, 99999)
+        last_four_digits = random.randint(1000, 9999)
 
         # Form the complete phone number
-        full_phone_number = f"{first_six_digits}{last_five_digits}"
+        full_phone_number = f"{first_six_digits}{last_four_digits}"
 
         # Add the phone number to the set to ensure uniqueness
         phone_numbers.add(full_phone_number)
